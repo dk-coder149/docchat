@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DocChat</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============ Login / Signup ============ -->
+  <section id="auth-view" class="auth" hidden>
+    <div class="auth-card">
+      <h1>DocChat</h1>
+      <p class="muted">Upload your documents and chat with them.</p>
+
+      <div class="tabs">
+        <button id="tab-login" class="tab active" type="button">Login</button>
+        <button id="tab-signup" class="tab" type="button">Sign up</button>
+      </div>
+
+      <form id="auth-form">
+        <label>Username
+          <input id="username" name="username" autocomplete="username" required
+                 minlength="3" maxlength="50" pattern="[A-Za-z0-9_.\-]+"
+                 title="Letters, numbers, dot, dash, underscore">
+        </label>
+        <label>Password
+          <input id="password" name="password" type="password" autocomplete="current-password"
+                 required minlength="8" maxlength="128">
+        </label>
+        <p id="auth-error" class="error" role="alert"></p>
+        <button id="auth-submit" class="btn primary" type="submit">Login</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ Main app ============ -->
+  <div id="app-view" class="app" hidden>
+    <aside class="sidebar">
+      <header class="sidebar-head">
+        <div>
+          <strong>DocChat</strong>
+          <div class="muted small" id="who"></div>
+        </div>
+        <button id="logout" class="btn ghost small" type="button">Logout</button>
+      </header>
+
+      <label class="dropzone" id="dropzone">
+        <input id="file-input" type="file" accept=".pdf,.txt" hidden>
+        <span><strong>Click to upload</strong> or drop a file here</span>
+        <span class="muted small">PDF or TXT, up to 10 MB</span>
+      </label>
+
+      <h2 class="section-title">Your documents</h2>
+      <ul id="doc-list" class="doc-list"></ul>
+      <p id="doc-empty" class="muted small">No documents yet.</p>
+    </aside>
+
+    <main class="chat">
+      <div class="chat-top">
+        <label class="muted small" for="doc-filter">Ask in</label>
+        <select id="doc-filter"><option value="">All documents</option></select>
+        <span class="spacer"></span>
+        <button id="clear-chat" class="btn ghost small" type="button">Clear chat</button>
+      </div>
+
+      <div id="messages" class="messages" aria-live="polite">
+        <div id="empty-chat" class="empty-chat">
+          <h2>Ask your documents anything</h2>
+          <p class="muted">Upload a PDF or TXT file on the left, wait until it says <em>ready</em>, then ask a question.</p>
+        </div>
+      </div>
+
+      <form id="chat-form" class="composer">
+        <textarea id="question" rows="1" maxlength="2000"
+                  placeholder="Ask something about your documents…  (Enter to send, Shift+Enter for new line)"></textarea>
+        <button id="send" class="btn primary" type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

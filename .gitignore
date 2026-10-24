@@ -1,0 +1,22 @@
+# Secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+
+# Local data (database, vector DB, uploads)
+*.db
+*.sqlite3
+chroma_db/
+
+# Node / editors / OS
+node_modules/
+.vscode/
+.idea/
+.DS_Store

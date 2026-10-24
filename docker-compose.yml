@@ -1,0 +1,64 @@
+# Teeno hisse ek saath: database + backend + frontend
+#   docker compose up --build
+# Frontend: http://localhost:3000   Backend docs: http://localhost:8000/docs
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-docchat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-docchat}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-docchat} -d ${POSTGRES_DB:-docchat}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      # Backend database ko service ke naam "db" se dhundta hai (Docker ka internal network)
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-docchat}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-docchat}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-groq}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Browser jis address se frontend kholta hai, wahi yahan allowed hona chahiye
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      CHROMA_PATH: /data/chroma
+    volumes:
+      - chroma_data:/data/chroma
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      # Ye address BROWSER use karta hai, isliye localhost (container ka naam nahi)
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  chroma_data:
