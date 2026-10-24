@@ -30,6 +30,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="DocChat API", version="1.0.0", lifespan=lifespan)
 
+# uvicorn app.main:app --reload --port 8000
+
+@app.get("/")
+def read_root(db:Session = Depends(get_db)):
+    result = db.execute(text("SELECT version();")).fetchone()
+    return {"message": "DocChat backend chal raha hai.", "db_version": result[0] if result else "unknown"}
+   
 # ---- rate limit ----
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

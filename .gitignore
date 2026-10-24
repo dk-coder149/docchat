@@ -2,7 +2,7 @@
 .env
 *.env
 !.env.example
-
+/backend/.env
 # Python
 __pycache__/
 *.pyc
@@ -14,7 +14,7 @@ venv/
 *.db
 *.sqlite3
 chroma_db/
-
+ 
 # Node / editors / OS
 node_modules/
 .vscode/
